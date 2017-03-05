@@ -3,12 +3,13 @@ var util = require('util');
 var events = require('events');
 var API = require('./https-helper.js');
 var BingSTTAPI = require('./bing-stt-wrapper.js');
+var uuid = require('node-uuid');
 
 var ALSARecord = require('./node-arecord.js');
 var ALSAPlay = require('./node-aplay.js');
 
 var api = new BingSTTAPI();
-var APPID = 'bot-test';
+var APPID = uuid.v1();
 var STT_TOKEN = '';
 var tokenAccquired = false;
 /*
@@ -29,12 +30,13 @@ mic.on('error', (error) => {
 */
 
 
-function StartRecord(fn, index){
-   var sound = new ALSARecord({
+function StartRecord(folder, prefix, index){
+    var fn = prefix + index + '.wav';
+    var sound = new ALSARecord({
         debug: true,    // Show stdout 
-        destination_folder: '/tmp',
+        destination_folder: folder,
         filename: fn,
-        alsa_format: 'dat',
+        alsa_format: 'cd',
         alsa_device: 'plughw:1,0'
     }); 
     sound.record();
@@ -48,18 +50,19 @@ function StartRecord(fn, index){
     }, 7000);
     
     setTimeout(function () {
+        console.log('stop recording!');
         sound.stop(); // stop after ten seconds 
-    }, 10000);
+    }, 3000);
     // you can also listen for various callbacks: 
     sound.on('complete', function () {
         console.log('Done with recording!');
-        api.speechToText(data, './' + fn + index + '.wav', APPID,
+        api.speechToText(STT_TOKEN, folder + fn , APPID,
                                         function(data){
                                             console.log('[user]' + data);
                                             //send to bot
                                             //play response
                                             //record again
-                                            RecordSound(fn, index++);
+                                            StartRecord(folder, prefix, ++index);
                                         },
                                         function(error){
 
@@ -88,9 +91,7 @@ api.accquireToken('84517151739b4a4f83ea1ce042cc348c',
                     tokenAccquired = true;
                     //while(STT_TOKEN != ''){
                         console.log('token='+STT_TOKEN);
-                        var fn = 'temp_';
-                        console.log(fn);
-                        StartRecord(fn, 0);
+                        StartRecord('/tmp/','temp_', 0);
                     //};
                 },
                 function(error){

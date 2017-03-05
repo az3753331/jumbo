@@ -28,6 +28,9 @@ module.exports = function Sound(options) {
 util.inherits(module.exports, events.EventEmitter);
 
 module.exports.prototype.record = function () {
+  console.log('this.alsa_device=' + this.alsa_device);
+  console.log('this.alsa_format=' + this.alsa_format);
+  
   this.stopped = false;
   this.process = spawn('arecord', ['-D', this.alsa_device, '-f', this.alsa_format, '-c', this.alsa_channels, '-r', this.alsa_rate]
     .concat(this.alsa_addn_args).concat(this.filename), {cwd: this.destination_folder});

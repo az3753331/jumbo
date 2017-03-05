@@ -23,6 +23,7 @@ HttpsWrapper.prototype.request = function (host,path,method,httpHeaders,body,onD
                     });
                 });
     if(body != null && body != "" && body != 'undefined'){
+        console.log('writting post data...');
         req.write(body);
     }
     req.end();

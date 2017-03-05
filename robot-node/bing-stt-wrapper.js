@@ -41,14 +41,19 @@ BingSTTAPI.prototype.speechToText = function (token, fn, appId, onData, onError)
     //-H 'Authorization: Bearer your_access_token' 
     //-H 'Content-type: audio/wav; codec="audio/pcm"; samplerate=16000' --data-binary @your_wave_file
     instanceId = uuid.v1();
-    requestAnimationFrame = uuid.v1();
+    requestId = uuid.v1();
     var https = new HTTPSWAPPER();
         var headers = {
-            'Content-type':'audio/wav; codec="audio/pcm"; samplerate=16000',
+            'Content-type':'audio/wav',//audio/wav; codec="audio/pcm"; samplerate=8000',
             'Authorization':'Bearer ' + token
         };
-        var data = fs.readFileSync(fn);
-        https.request('speech.platform.bing.com','/recognize?scenarios=smd&appid=' + appId + '&locale=your_locale&device.os=your_device_os&version=3.0&format=json&instanceid=' + instanceId + '&requestid=' + requestId ,'POST',
+        console.log('speechToText, fn=' + fn);
+        var data = fs.readFileSync(fn,'binary');
+        console.log('sending request...');
+        
+        https.request('speech.platform.bing.com',
+                        '/recognize?scenarios=ulm&appid=' + appId + '&locale=zh-TW&device.os=your_device_os&version=3.0&format=json&instanceid=' + instanceId + '&requestid=' + requestId ,
+                        'POST',
                         headers,
                         data,
                         function (data){
