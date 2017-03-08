@@ -1,0 +1,26 @@
+{
+  "name": "pocketsphinx",
+  "version": "1.0.1",
+  "description": "Node binding for continuous voice recoginition through pocketsphinx.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cmusphinx/pocketsphinx.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "keywords": [
+    "pocketsphinx",
+    "sphinx",
+    "voice"
+  ],
+  "author": "moneppo",
+  "license": "LGPL",
+  "gypfile": true,
+  "devDependencies": {
+    "express": "4.x",
+    "socket.io": "1.x"
+  }
+}

@@ -12,47 +12,31 @@ var api = new BingSTTAPI();
 var APPID = uuid.v1();
 var STT_TOKEN = '';
 var tokenAccquired = false;
-/*
-let Mic = require('node-microphone');
-let mic = new Mic();
-let micStream = mic.startRecording();
-micStream.pipe( myWritableStream );
-setTimeout(() => {
-    logger.info('stopped recording');
-    mic.stopRecording();
-}, 3000);
-mic.on('info', (info) => {
-	console.log(info);
-});
-mic.on('error', (error) => {
-	console.log(error);
-});
-*/
-
-
-function StartRecord(folder, prefix, index){
+var index = 0;
+function StartRecord(folder, prefix){
     var fn = prefix + index + '.wav';
     var sound = new ALSARecord({
         debug: true,    // Show stdout 
         destination_folder: folder,
         filename: fn,
-        alsa_format: 'cd',
+        //alsa_format: 'cd',
+        alsa_rate:16000,
         alsa_device: 'plughw:1,0'
+        //alsa_rate: 44000
     }); 
     sound.record();
+    //setTimeout(function () {
+    //    sound.pause(); // pause the recording after five seconds 
+    //}, 5000);
+    
+    //setTimeout(function () {
+    //    sound.resume(); // and resume it two seconds after pausing 
+    //}, 7000);
     
     setTimeout(function () {
-        sound.pause(); // pause the recording after five seconds 
-    }, 5000);
-    
-    setTimeout(function () {
-        sound.resume(); // and resume it two seconds after pausing 
-    }, 7000);
-    
-    setTimeout(function () {
-        console.log('stop recording!');
-        sound.stop(); // stop after ten seconds 
-    }, 3000);
+            console.log('stop recording!');
+            sound.stop(); // stop after ten seconds 
+        }, 3000);
     // you can also listen for various callbacks: 
     sound.on('complete', function () {
         console.log('Done with recording!');
@@ -62,10 +46,10 @@ function StartRecord(folder, prefix, index){
                                             //send to bot
                                             //play response
                                             //record again
-                                            StartRecord(folder, prefix, ++index);
+                                            //StartRecord(folder, prefix, ++index);
                                         },
                                         function(error){
-
+                                            console.log('[Error]' + error);
                                         });
         /*                                
         var play = new ALSAPlay();
@@ -91,7 +75,7 @@ api.accquireToken('84517151739b4a4f83ea1ce042cc348c',
                     tokenAccquired = true;
                     //while(STT_TOKEN != ''){
                         console.log('token='+STT_TOKEN);
-                        StartRecord('/tmp/','temp_', 0);
+                        StartRecord('/tmp/','temp_');
                     //};
                 },
                 function(error){
@@ -108,6 +92,7 @@ process.stdin.on('data', function (text) {
   });
 
 return;
+
 
 
 
