@@ -1,6 +1,6 @@
 var BOTWRAPPER = require('../botclient.js');
 
-var key = '<your directline key>';
+var key = 'X-O-skejDE0.cwA.n0k.PX7roOwYzPtkqr50ClLjRRBhz3v0e0rIYLgz7fXZjL4';
 var bot = new BOTWRAPPER();
 var socket;
 var convId = '';

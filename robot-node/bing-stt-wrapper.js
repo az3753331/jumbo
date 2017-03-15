@@ -19,7 +19,7 @@ BingSTTAPI.prototype.accquireToken = function(onData, onError){
     var headers = {
         'Content-type':'application/x-www-form-urlencoded',
         'Content-Length':0,
-        'Ocp-Apim-Subscription-Key':subscriptionKey
+        'Ocp-Apim-Subscription-Key':SUBSCRIPTIONKEY
     };
     https.request('api.cognitive.microsoft.com','/sts/v1.0/issueToken','POST',
                     headers,

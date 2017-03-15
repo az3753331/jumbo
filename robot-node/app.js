@@ -20,6 +20,11 @@ var STT_TOKEN = '';
 var tokenAccquired = false;
 var index = 0;
 
+var BOTWRAPPER = require('../botclient.js');
+
+
+var bot = new BOTWRAPPER();
+var BOT_DIRECTLINE_KEY = 'X-O-skejDE0.cwA.n0k.PX7roOwYzPtkqr50ClLjRRBhz3v0e0rIYLgz7fXZjL4';
 
 var config = new ps.Decoder.defaultConfig();
 config.setString("-hmm", modeldir + "en-us");
@@ -57,7 +62,7 @@ function StartRecord(folder, prefix){
     setTimeout(function () {
             console.log('stop recording!');
             sound.stop(); // stop after ten seconds 
-        }, 3000);
+        }, 2000);
     // you can also listen for various callbacks: 
     sound.on('complete', function () {
         if(false)
@@ -72,7 +77,7 @@ function StartRecord(folder, prefix){
                 var result = JSON.stringify( decoder.hyp() );
                 console.log('PocketSphinx result=' + result);
                 //if(result == "HI JUMBO"){
-                    //trigger word detected!
+                    //trigger bot conversation anyway!
 
                 //}
             });
