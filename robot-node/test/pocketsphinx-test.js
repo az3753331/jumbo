@@ -1,7 +1,8 @@
 var fs = require('fs');
-
 var ps = require('./stt/node/node-pocketsphinx/').ps;
-
+var events = require('events');
+var util = require('util');
+var uuid = require('node-uuid');
 modeldir = "stt/pocketsphinx/model/en-us/"
 
 var config = new ps.Decoder.defaultConfig();
