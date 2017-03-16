@@ -7,6 +7,11 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
+using System.Configuration;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using Jumbo.Helpers;
 
 namespace Jumbo
 {
@@ -26,8 +31,29 @@ namespace Jumbo
                 int length = (activity.Text ?? string.Empty).Length;
 
                 // return our reply to the user
-                Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
-                await connector.Conversations.ReplyToActivityAsync(reply);
+                var replyText = $"你說：{activity.Text}";
+                CognitiveService.BingTTS tts = new CognitiveService.BingTTS(ConfigurationManager.AppSettings["BingSpeechAPI_Key"]);
+                var token = await tts.AcquireTokenAsync();
+                Stream stream = await tts.Synthesize(replyText, "zh-TW");
+                var sh = new StorageHelper(ConfigurationManager.AppSettings["StorageSASUri"].Replace("$$","&"));
+
+                Activity voiceReply = activity.CreateReply(replyText);
+                //var bytes = StreamToBytes(stream);
+
+                var fn = sh.UploadFile(Guid.NewGuid().ToString() + ".wav", stream);
+
+                if (voiceReply.Attachments == null)
+                {
+                    voiceReply.Attachments = new List<Attachment>();
+                }
+                voiceReply.Attachments.Add(new Attachment()
+                {
+                    ContentUrl = fn,
+                    ContentType = "audio/mp4",
+                    Name = "result.wav"
+                });
+                
+                await connector.Conversations.ReplyToActivityAsync(voiceReply);
             }
             else
             {
@@ -64,6 +90,21 @@ namespace Jumbo
             }
 
             return null;
+        }
+        private byte[] StreamToBytes(Stream stream)
+        {
+            using (var sr = new BinaryReader(stream))
+            {
+                List<byte> resp = new List<byte>();
+                byte[] buffer = null;
+                do
+                {
+                    buffer = sr.ReadBytes(1024);
+                    resp.AddRange(buffer);
+                } while (buffer != null && buffer.Length > 0);
+
+                return resp.ToArray();
+            }
         }
     }
 }

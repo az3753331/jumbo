@@ -11,7 +11,7 @@ bot.accquireToken(function(data){
             console.log('***** message recevied from bot = ' + JSON.stringify(data));
         });
         convId = result.conversationId;
-        bot.sendMessage(result.conversationId,'user1','test message');
+        bot.sendMessage(result.conversationId,'user1','測試');
     },
     function(error){
         console.log('error=' + error);

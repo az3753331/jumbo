@@ -13,7 +13,7 @@ var SUBSCRIOTIONKEY = "";
 var TOKEN = "";
 var https = new HTTPSWAPPER();
 var socket;
-var currentWatermark = '';
+var currentWatermark = '0';
 
 
 var _receiveLastMessageSync = function (conversationId){
@@ -23,14 +23,18 @@ var _receiveLastMessageSync = function (conversationId){
     var resp = https.requestSync('directline.botframework.com','/v3/directline/conversations/' + conversationId + '/activities','GET',
                     headers,
                     '');
-    //console.log(JSON.stringify(JSON.parse(resp.body)));
+    console.log(JSON.stringify(JSON.parse(resp.body)));
     var o = JSON.parse(resp.body);
-    var last = o.activities[o.activities.length - 1];
-    if(o.watermark != currentWatermark){
-        currentWatermark = o.watermark;
-        return last;
-    }else{
+    if(o.error != 'undefined' && o.error != null){
         return null;
+    }else{
+        var last = o.activities[o.activities.length - 1];
+        if(o.watermark != currentWatermark && o.watermark != ''){
+            currentWatermark = o.watermark;
+            return last;
+        }else{
+            return null;
+        }
     }
 }
 //http://vmiv.blogspot.tw/2016/04/nodejssocketio.html
