@@ -1,6 +1,6 @@
 var util = require('util');
 var https = require('https');
-var events = require('events')
+var events = require('events');
 
 var httpsync;
 try 
@@ -13,10 +13,10 @@ catch (ex)
 }
 
 function HttpsWrapper () {
-  events.EventEmitter.call(this)
+  events.EventEmitter.call(this);
 }
 
-util.inherits(HttpsWrapper, events.EventEmitter)
+util.inherits(HttpsWrapper, events.EventEmitter);
 
 HttpsWrapper.prototype.requestSync = function(host, requestPath, method, httpsHeaders,body){
     var req = httpsync.request({
@@ -49,7 +49,40 @@ HttpsWrapper.prototype.request = function (host,path,method,httpHeaders,body,onD
         res.on('data', function(d) {
                         onData(d);
                     });
+
                 });
+                
+    if(body != null && body != "" && body != 'undefined'){
+        //console.log('writting post data...' + body);
+        req.write(body);
+    }
+    req.end();
+
+    req.on('error', function(e) {
+        onError(e);
+    });
+}
+
+HttpsWrapper.prototype.request2 = function (host,path,method,httpHeaders,body,onData,onError,onEnd) {
+    var options = {
+        host: host,
+        port: 443,
+        path: path,
+        method: method,
+        headers: httpHeaders,
+        body:body
+    };
+    var req = https.request(options, function(res) {
+        console.log(res.statusCode);
+        res.on('data', function(d) {
+                        onData(d);
+                    });
+        res.on('end', () => {
+            console.log('d-------------------------------------------');
+            onEnd();
+        });
+    });
+                
     if(body != null && body != "" && body != 'undefined'){
         console.log('writting post data...' + body);
         req.write(body);

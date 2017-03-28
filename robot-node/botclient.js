@@ -20,7 +20,7 @@ var _receiveLastMessageSync = function (conversationId){
     var headers = {
             'Authorization': 'Bearer ' + TOKEN
         };
-    var resp = https.requestSync('directline.botframework.com','/v3/directline/conversations/' + conversationId + '/activities','GET',
+    var resp = https.requestSync('directline.botframework.com','/v3/directline/conversations/' + conversationId + '/activities?watermark=' + currentWatermark,'GET',
                     headers,
                     '');
     console.log(JSON.stringify(JSON.parse(resp.body)));

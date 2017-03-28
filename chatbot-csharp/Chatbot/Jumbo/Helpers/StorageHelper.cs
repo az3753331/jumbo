@@ -17,7 +17,7 @@ namespace Jumbo.Helpers
         private string SAS = null;
         public StorageHelper(string connectionString)
         {
-            CONNECTION_STRING = connectionString.Replace("[si]","&si").Replace("[sr]","&sr").Replace("[sig]","&sig");
+            CONNECTION_STRING = connectionString.Replace("[si]","&si").Replace("[sr]","&sr").Replace("[sig]","&sig").Replace("$$","&");
             SAS = CONNECTION_STRING.Split('?')[1];
         }
 

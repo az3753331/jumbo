@@ -1,14 +1,14 @@
 
 var util = require('util');
 var events = require('events');
-var API = require('../https-helper.js');
+var HTTPSWAPPER = require('../https-helper.js');
 var BingSTTAPI = require('../bing-stt-wrapper.js');
 var uuid = require('node-uuid');
 var fs = require("fs");
 
 var ALSARecord = require('../node-arecord.js');
 var ALSAPlay = require('../node-aplay.js');
-var api = new BingSTTAPI();
+var bingAPI = new BingSTTAPI();
 
 var APPID = uuid.v1();
 var STT_TOKEN = '';
@@ -18,7 +18,9 @@ var index = 0;
 var BOTWRAPPER = require('../botclient.js');
 var bot = null;
 
-var BOT_DIRECTLINE_KEY = 'X-O-skejDE0.cwA.n0k.PX7roOwYzPtkqr50ClLjRRBhz3v0e0rIYLgz7fXZjL4';
+var BOT_DIRECTLINE_KEY = '<BOT DIRECT KEY>';
+var BING_SUBSCRIPTION_KEY = '<BING SPEECH API KEY>';
+
 function PlayVoice(fn){
     var sound = new ALSAPlay();
     sound.play(fn);
@@ -44,7 +46,7 @@ function StartRecord(folder, prefix){
 
     // you can also listen for various callbacks: 
     sound.on('complete', function () {
-        api.speechToText(STT_TOKEN, folder + fn , APPID, 'zh-TW',
+        bingAPI.speechToText(STT_TOKEN, folder + fn , APPID, 'zh-TW',
                                         function(sttText){
                                             console.log('[user]' + sttText);
                                             var sttResult = JSON.parse(sttText);
@@ -74,6 +76,7 @@ function StartRecord(folder, prefix){
                                                             });
                                                             convId = result.conversationId;
                                                             var userText = sttResult.header.lexical;
+                                                            console.log('*** sending to bot:' + userText);
                                                             bot.sendMessage(result.conversationId,'user1',userText);
                                                         },
                                                         function(error){
@@ -96,8 +99,8 @@ function StartRecord(folder, prefix){
 
     });
 }
-api.setSubscriptionKey('84517151739b4a4f83ea1ce042cc348c');
-api.accquireToken(function(data){
+bingAPI.setSubscriptionKey(BING_SUBSCRIPTION_KEY);
+bingAPI.accquireToken(function(data){
                     STT_TOKEN = data;
                     tokenAccquired = true;
                     //while(STT_TOKEN != ''){
@@ -109,7 +112,7 @@ api.accquireToken(function(data){
                     tokenAccquired = true;
                 });
 var index = 0;
-console.log('test');
+//console.log('test');
 
 process.stdin.on('data', function (text) {
     console.log('received data:', util.inspect(text));

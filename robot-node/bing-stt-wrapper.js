@@ -25,7 +25,7 @@ BingSTTAPI.prototype.accquireToken = function(onData, onError){
                     headers,
                     '',
                     function (data){
-                        console.log('data=' + data);
+                        //console.log('data=' + data);
                         onData(data);
                     },
                     function (error){
@@ -53,7 +53,7 @@ BingSTTAPI.prototype.speechToText = function (token, fn, appId, locale, onData, 
                         headers,
                         data,
                         function (data){
-                            console.log('data=' + data);
+                            //console.log('data=' + data);
                             onData(data);
                         },
                         function (error){
