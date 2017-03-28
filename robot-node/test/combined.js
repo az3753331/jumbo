@@ -14,8 +14,8 @@ var https = new HTTPSWAPPER();
 var player = new ALSAPlay();
 var bingAPI = new BingSTTAPI();
 
-var BOT_DIRECTLINE_KEY = '<BOT DIRECT KEY>';
-var BING_SUBSCRIPTION_KEY = '<BING SPEECH API KEY>';
+var BOT_DIRECTLINE_KEY = '<your directline key>';
+var BING_SUBSCRIPTION_KEY = '<your bing api key>';
 
 var socket;
 var convId = '';
@@ -26,11 +26,13 @@ var index = 0;
 
 
 bot.setDirectlineSecret(BOT_DIRECTLINE_KEY);
+
 bot.accquireToken(function(data){
         var result = bot.startConversation(function(data){
             console.log('****** message recevied from bot = ' + JSON.stringify(data));
             var id = data.id.split("|")[0];
             var wavFN = id + '-sync.wav';
+            console.log('==>>' + data.attachments != null && data.attachments != 'undefined');
             if(data.attachments != null && data.attachments != 'undefined'){
                 var url = data.attachments[0].contentUrl;
                 //Download file from contentUrl
@@ -39,6 +41,7 @@ bot.accquireToken(function(data){
                 };
                 var u = URL.parse(url);
                 
+                console.log('downloading voice file...');
                 var result = https.requestSync(u.host, u.path, 'GET', null, null);
 
                 
@@ -46,10 +49,11 @@ bot.accquireToken(function(data){
                 //fs.writeFile(id + '-sync-2.wav',result.body,null);
                 fs.writeFile(wavFN,buffer,'binary',function(e){
                                     console.log('done');
+                                     PlayVoice(wavFN);
                                 });
-                player.play(wavFN);
+                //player.play(wavFN);
 
-
+                
                 StartRecord('/tmp/','temp_');
             }
         });
@@ -62,11 +66,11 @@ bot.accquireToken(function(data){
 );
 
 function PlayVoice(fn){
-    var sound = new ALSAPlay();
-    sound.play(fn);
+    player.play(fn);
 }
 
 function StartRecord(folder, prefix){
+    PlayVoice('../media/begin.wav');
     var fn = prefix + index + '.wav';
     var sound = new ALSARecord({
         debug: true,    // Show stdout 
@@ -77,15 +81,18 @@ function StartRecord(folder, prefix){
         alsa_device: 'plughw:1,0'
         //alsa_rate: 44000
     }); 
+    index++;
     sound.record();
 
     setTimeout(function () {
             console.log('stop recording!');
-            sound.stop(); // stop after ten seconds 
+            PlayVoice('../media/end.wav');
+            sound.stop();
         }, 3000);
 
     // you can also listen for various callbacks: 
     sound.on('complete', function () {
+        console.log('TOKEN=' + STT_TOKEN);
         bingAPI.speechToText(STT_TOKEN, folder + fn , APPID, 'zh-TW',
                                         function(sttText){
                                             console.log('[user]' + sttText);
@@ -98,50 +105,7 @@ function StartRecord(folder, prefix){
                                             else
                                             {
                                                 //send to bot
-                                                if(bot == null){
-                                                    bot = new BOTWRAPPER();
-                                                
-                                                    bot.setDirectlineSecret(BOT_DIRECTLINE_KEY);
-                                                    bot.accquireToken(function(data){
-                                                            var result = bot.startConversation(
-                                                                function(botReply){
-                                                                    console.log('****** message recevied from bot = ' + JSON.stringify(data));
-                                                                    var id = data.id.split("|")[0];
-                                                                    var wavFN = id + '-sync.wav';
-                                                                    if(data.attachments != null && data.attachments != 'undefined'){
-                                                                        var url = data.attachments[0].contentUrl;
-                                                                        //Download file from contentUrl
-                                                                        var headers = {
-                                                                                
-                                                                        };
-                                                                        var u = URL.parse(url);
-                                                                        
-                                                                        var result = https.requestSync(u.host, u.path, 'GET', null, null);
-
-                                                                        
-                                                                        var buffer = new Buffer(result.body,'binary');
-                                                                        //fs.writeFile(id + '-sync-2.wav',result.body,null);
-                                                                        fs.writeFile(wavFN,buffer,'binary',function(e){
-                                                                                            console.log('done');
-                                                                                        });
-                                                                        player.play(wavFN);
-                                                                    }
-
-                                                                    StartRecord('/tmp/','temp_');
-                                                            });
-                                                            convId = result.conversationId;
-                                                            var userText = sttResult.header.lexical;
-                                                            bot.sendMessage(result.conversationId,'user1',userText);
-                                                        },
-                                                        function(error){
-                                                            console.log('error=' + error);
-                                                        }
-                                                    );
-                                                }
-                                                else
-                                                {
-                                                    bot.sendMessage(convId,'user1',sttResult.header.lexical);
-                                                }
+                                                bot.sendMessage(convId,'user1',sttResult.header.lexical);
                                             }
                                             //play response
                                             //record again

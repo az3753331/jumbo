@@ -18,8 +18,8 @@ var index = 0;
 var BOTWRAPPER = require('../botclient.js');
 var bot = null;
 
-var BOT_DIRECTLINE_KEY = '<BOT DIRECT KEY>';
-var BING_SUBSCRIPTION_KEY = '<BING SPEECH API KEY>';
+var BOT_DIRECTLINE_KEY = '<your directline key>';
+var BING_SUBSCRIPTION_KEY = '<your bing api key>';
 
 function PlayVoice(fn){
     var sound = new ALSAPlay();

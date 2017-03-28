@@ -45,7 +45,7 @@ HttpsWrapper.prototype.request = function (host,path,method,httpHeaders,body,onD
         body:body
     };
     var req = https.request(options, function(res) {
-        console.log(res.statusCode);
+        console.log('http status code:' +　res.statusCode);
         res.on('data', function(d) {
                         onData(d);
                     });

@@ -45,7 +45,7 @@ BingSTTAPI.prototype.speechToText = function (token, fn, appId, locale, onData, 
         };
         console.log('speechToText, fn=' + fn);
         var data = fs.readFileSync(fn);//,'binary');
-        console.log('sending request...');
+        console.log('sending request...' + data.byteLength);
         
         https.request('speech.platform.bing.com',
                         '/recognize?scenarios=websearch&appid=' + appId + '&locale=' + locale + '&device.os=your_device_os&version=3.0&format=json&instanceid=' + instanceId + '&requestid=' + requestId ,

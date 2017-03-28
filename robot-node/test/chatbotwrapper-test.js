@@ -10,8 +10,8 @@ var bot = new BOTWRAPPER();
 var https = new HTTPSWAPPER();
 var player = new ALSAPlay();
 
-var BOT_DIRECTLINE_KEY = '<BOT DIRECT KEY>';
-var BING_SUBSCRIPTION_KEY = '<BING SPEECH API KEY>';
+var BOT_DIRECTLINE_KEY = 'X-O-skejDE0.cwA.n0k.PX7roOwYzPtkqr50ClLjRRBhz3v0e0rIYLgz7fXZjL4';
+var BING_SUBSCRIPTION_KEY = '84517151739b4a4f83ea1ce042cc348c';
 
 var socket;
 var convId = '';
