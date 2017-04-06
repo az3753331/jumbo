@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using Jumbo.Helpers;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace Jumbo
 {
@@ -24,8 +25,11 @@ namespace Jumbo
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            if (activity.Type == ActivityTypes.Message)
+            try
             {
+                if (activity.Type == ActivityTypes.Message)
+                {
+#if false
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 // calculate something for us to return
                 int length = (activity.Text ?? string.Empty).Length;
@@ -54,10 +58,22 @@ namespace Jumbo
                 });
                 
                 await connector.Conversations.ReplyToActivityAsync(voiceReply);
+#else
+                    await Conversation.SendAsync(activity, () => new Dialogs.TranslationDialog());
+#endif
+                }
+                else
+                {
+                    HandleSystemMessage(activity);
+                }
             }
-            else
+            catch (Exception exp)
             {
-                HandleSystemMessage(activity);
+                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                var exception = activity.CreateReply($"{exp.Message} - {exp.StackTrace}");
+                await connector.Conversations.ReplyToActivityAsync(exception);
+
+                throw exp;
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;

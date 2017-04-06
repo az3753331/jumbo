@@ -1,0 +1,21 @@
+{
+  "name": "jumbo",
+  "version": "2.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "azure-storage": "^2.1.0",
+    "http-sync-win": "0.0.7",
+    "node-record-lpcm16": "^0.2.0",
+    "node-uuid": "^1.4.8",
+    "snowboy": "^1.1.0",
+    "socket.io-client": "^1.7.3",
+    "waveheader": "0.0.2",
+    "speaker": "^0.3.0"
+  }
+}

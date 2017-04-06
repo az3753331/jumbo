@@ -1,57 +1,38 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Media;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Jumbo.CognitiveService
 {
-    public class BingTTS
+    public partial class BingSTT
     {
-        private const string BaseUri = "https://speech.platform.bing.com/synthesize";
-        private string SUBSCRIPTION_KEY = null;
-        private string TOKEN = null;
-        public BingTTS(string subscriptionKey)
+        public static string GetLanguageCodeByCountry(string country)
         {
-            SUBSCRIPTION_KEY = subscriptionKey;
-        }
-        public async Task<string> AcquireTokenAsync()
-        {
-            var url = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";//"https://api.projectoxford.ai/speech/v0/internalIssueToken";// 
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY);
-            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
-            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Length", "0");
-            var resp = await httpClient.PostAsync(url, null);
-            var text = resp.Content as StreamContent;
-            var body = await text.ReadAsStringAsync();
-            TOKEN = body;
-            return TOKEN;
-        }
-        public async Task<Stream> Synthesize(string text, string language = "")
-        {
-            var speakerName = speakerNames[language]["Female"];
-            //var baseXml = $"<speak version='1.0' xml:lang='en-us'><voice xml:lang='{Language}' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice ({Language}, Yating, Apollo)'>{text}</voice></speak>";
-            var baseXml = $"<speak version='1.0' xml:lang='en-us'><voice xml:lang='{language}' xml:gender='Female' name='{speakerName}'>{text}</voice></speak>";
-            if (String.IsNullOrEmpty(TOKEN))
-            {
-                TOKEN = await AcquireTokenAsync();
-            }
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.TryAddWithoutValidation("X-Microsoft-OutputFormat", "riff-16khz-16bit-mono-pcm");
-            client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/ssml+xml");
-            client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {TOKEN}");
-            client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "RetailDemo");
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, BaseUri)
-            {
-                Content = new StringContent(baseXml)
-            };
-            var respMessage = await client.SendAsync(requestMessage); ;
-            return await respMessage.Content.ReadAsStreamAsync();
-        }
+            var result = string.Empty;
 
+            var cul = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.AllCultures).Where(c => c.EnglishName.ToLower() == country).SingleOrDefault();
+            if (cul == null)
+                result = null;
+            else
+                result = cul.TextInfo.CultureName;
+            if (string.IsNullOrEmpty(result))
+            {
+                if (string.IsNullOrEmpty(country))
+                    country = result = "en-US";
+                else if (Language_Codes.ContainsKey(country.ToLower()))
+                    result = Language_Codes[country.ToLower()];
+                else
+                    result = "en-US";
+            }
+            return result;
+        }
         static private Dictionary<string, string> Language_Codes = new Dictionary<string, string>
         {
             {"japanese","ja-JP" },

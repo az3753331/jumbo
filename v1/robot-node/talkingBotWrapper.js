@@ -1,22 +1,23 @@
-var BOTWRAPPER = require('../botclient.js');
-var HTTPSWAPPER = require('../https-helper.js');
-var BingSTTAPI = require('../bing-stt-wrapper.js');
+var BOTWRAPPER = require('./botclient.js');
+var HTTPSWAPPER = require('./https-helper.js');
+var BingSTTAPI = require('./bing-stt-wrapper.js');
 var uuid = require('node-uuid');
-var ALSAPlay = require('../node-aplay.js');
+var ALSAPlay = require('./node-aplay.js');
 var fs = require('fs');
 const URL = require('url');
 var util = require('util');
+var events = require('events');
 
-var ALSARecord = require('../node-arecord.js');
+var ALSARecord = require('./node-arecord.js');
 
 var bot = new BOTWRAPPER();
 var https = new HTTPSWAPPER();
 var player = new ALSAPlay();
 var bingAPI = new BingSTTAPI();
-
-var BOT_DIRECTLINE_KEY = '<your directline key>';
-var BING_SUBSCRIPTION_KEY = '<your bing api key>';
-
+/*
+var BOT_DIRECTLINE_KEY = 'X-O-skejDE0.cwA.n0k.PX7roOwYzPtkqr50ClLjRRBhz3v0e0rIYLgz7fXZjL4';
+var BING_SUBSCRIPTION_KEY = '84517151739b4a4f83ea1ce042cc348c';
+*/
 var socket;
 var convId = '';
 var APPID = uuid.v1();
@@ -24,10 +25,14 @@ var STT_TOKEN = '';
 var tokenAccquired = false;
 var index = 0;
 
+function TalkingBotWrapper () {  events.EventEmitter.call(this);}
+util.inherits(TalkingBotWrapper, events.EventEmitter);
 
-bot.setDirectlineSecret(BOT_DIRECTLINE_KEY);
+TalkingBotWrapper.prototype.config = function(botDirectlineKey,bingSpeechApiKey){
+    bot.setDirectlineSecret(botDirectlineKey);
+    bingAPI.setSubscriptionKey(bingSpeechApiKey);
 
-bot.accquireToken(function(data){
+    bot.accquireToken(function(data){
         var result = bot.startConversation(function(data){
             console.log('****** message recevied from bot = ' + JSON.stringify(data));
             var id = data.id.split("|")[0];
@@ -64,6 +69,20 @@ bot.accquireToken(function(data){
         console.log('error=' + error);
     }
 );
+}
+TalkingBotWrapper.prototype.start = function(){
+    bingAPI.accquireToken(function(data){
+                    STT_TOKEN = data;
+                    tokenAccquired = true;
+                    //while(STT_TOKEN != ''){
+                        console.log('token='+STT_TOKEN);
+                        StartRecord('/tmp/','temp_');
+                    //};
+                },
+                function(error){
+                    tokenAccquired = true;
+                });
+}
 
 function PlayVoice(fn){
     player.play(fn);
@@ -108,8 +127,6 @@ function StartRecord(folder, prefix){
                                                 bot.sendMessage(convId,'user1',sttResult.header.lexical);
                                             }
                                             //play response
-                                            //record again
-                                            //StartRecord(folder, prefix, ++index);
                                         },
                                         function(error){
                                             console.log('[Error]' + error);
@@ -118,20 +135,10 @@ function StartRecord(folder, prefix){
     });
 }
 
-bingAPI.setSubscriptionKey(BING_SUBSCRIPTION_KEY);
-bingAPI.accquireToken(function(data){
-                    STT_TOKEN = data;
-                    tokenAccquired = true;
-                    //while(STT_TOKEN != ''){
-                        console.log('token='+STT_TOKEN);
-                        StartRecord('/tmp/','temp_');
-                    //};
-                },
-                function(error){
-                    tokenAccquired = true;
-                });
+//bingAPI.setSubscriptionKey(BING_SUBSCRIPTION_KEY);
+
 var index = 0;
-console.log('test');
+
 
 process.stdin.on('data', function (text) {
     console.log('received data:', util.inspect(text));
