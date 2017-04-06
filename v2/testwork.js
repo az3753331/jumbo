@@ -1,6 +1,13 @@
-const record = require('node-record-lpcm16'); const Detector = require('snowboy').Detector; const Models = require('snowboy').Models; const uuid = 
-require('node-uuid'); const BOTCLIENT = require('./botclient.js'); const HTTPSWAPPER = require('./https-helper.js'); const URL = require('url'); var header = 
-require("waveheader"); var fs = require('fs'); const AUDIO_CONFIG = {
+const record = require('node-record-lpcm16'); 
+const Detector = require('snowboy').Detector; 
+const Models = require('snowboy').Models; 
+const uuid = require('node-uuid'); 
+const BOTCLIENT = require('./botclient.js'); 
+const HTTPSWAPPER = require('./https-helper.js'); 
+const URL = require('url'); 
+var header = require("waveheader"); 
+var fs = require('fs'); 
+const AUDIO_CONFIG = {
                 sampleRate: 16000,
                 channels: 1,
                 bitDepth: 16
@@ -89,36 +96,21 @@ var mic = record.start({
   sampleRate: 16000,
 });
 function onData_V2(data){
-  var fn = './test_' + index + '.wav';
   if(IS_TRIGGERED){
     if(buffer == null){
         buffer = new Buffer(data);
         currentFileName = 'blob-' + uuid.v1() + '.wav';
-         /*
-         buffer = bot.getUploadStream(
-            {
-                contentType:'audio/wav',
-                fileName:currentFileName
-            }
-        );
-        */
+        
     }else{
         buffer = Buffer.concat([buffer, new Buffer(data)]);
     }
     console.log('*** writting data to blob:' + data.byteLength);
-    /*
-    buffer.write(getWavHeader(1024 * 1024));
-    buffer.write(data);
-    */
+    
   }else{
     if(buffer != null){
         console.log('*** end writting data to blob');
         index++;
-        /*
-        buffer.end();
-        buffer = null;
-        */
-        //var fn = 'test-' + uuid.v1() + '.wav';
+       
         var t = bot.getUploadStream(
             {
                 contentType:'audio/wav',
@@ -126,7 +118,6 @@ function onData_V2(data){
             }
         );
         
-        //b = Buffer.concat([getWavHeader(Buffer.byteLength(b,{encoding:'binary'})),b]);
         t.write(header(44100 * 8, {
             sampleRate: 16000,
             channels: 1,
@@ -140,8 +131,8 @@ function onData_V2(data){
                 contentType:'audio/wav',
                 contentUrl:'https://' + CONFIGURATION.StorageInfo.account + '.blob.core.windows.net/' +
                                         CONFIGURATION.StorageInfo.container + '/' +
-                                        currentFileName,/*currentFileName,*/
-                name:currentFileName/*currentFileName*/
+                                        currentFileName,
+                name:currentFileName
             }]
         );
     }

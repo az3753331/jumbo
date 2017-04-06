@@ -105,50 +105,51 @@ BotClient.prototype.startConversation = function(onMessageReceived){
     }
     
     //somehow I can't make websocket works in my environment, so use polling GET instead for now.
-    /*
-    setInterval(function() {
-                    console.log('polling...');
-                    var activity = _receiveLastMessage(resultObj.conversationId,
-                                                        function(activity){
-                                                            if(activity != null && activity != 'undefined'){
-                                                                onMessageReceived(activity);
-                                                            }
-                                                        },
-                                                        function(err){
-                                                            
-                                                        })
-                        },1000);
+    if(true){
+        setInterval(function() {
+                        console.log('polling...');
+                        var activity = _receiveLastMessage(resultObj.conversationId,
+                                                            function(activity){
+                                                                if(activity != null && activity != 'undefined'){
+                                                                    onMessageReceived(activity);
+                                                                }
+                                                            },
+                                                            function(err){
+                                                                
+                                                            })
+                            },1000);
     
-    */
-    socket = require('socket.io-client')(streamUrl,
-                                            {
-                                                extraHeaders:{
-                                                    Upgrade:'websocket',
-                                                    Conneciton:'upgrade'
-                                                }
-                                            });
+    }
+    else{
+        socket = require('socket.io-client')(streamUrl,
+                                        {
+                                            extraHeaders:{
+                                                Upgrade:'websocket',
+                                                Conneciton:'upgrade'
+                                            }
+                                        });
                                             
-    socket.on('connect', function(){console.log('socket connected');});
-    socket.on('*', function(){console.log('socket ***');});
-    socket.on('message', function(data){
-        console.log('event data=' + data);
+        socket.on('connect', function(){console.log('socket connected');});
+        socket.on('*', function(){console.log('socket ***');});
+        socket.on('message', function(data){
+            console.log('event data=' + data);
+            onMessageReceived(data);
+        });
+        socket.on('data', function(data){
+            console.log('data data=' + data);
+            onMessageReceived(data);
+        });
+        socket.on('onevent', function(data){
+            console.log('Message data=' + data);
         onMessageReceived(data);
-    });
-    socket.on('onmessage', function(data){
-        console.log('event data=' + data);
+        });
+        socket.on('event', function(data){
+            console.log('Message data=' + data);
         onMessageReceived(data);
-    });
-    socket.on('onevent', function(data){
-        console.log('Message data=' + data);
-       onMessageReceived(data);
-    });
-    socket.on('event', function(data){
-        console.log('Message data=' + data);
-       onMessageReceived(data);
-    });
+        });
 
-    console.log('socket created');
-   
+        console.log('socket created');
+    }   
     CONVERSATIONID = resultObj.conversationId;
     return resultObj;               
 
