@@ -4,6 +4,7 @@ var util = require('util');
 var uuid = require('node-uuid');
 var fs = require("fs");
 var azure = require('azure-storage');
+var stream = require('stream');
 
 var CHANNELID = '';
 var USERID = '';
@@ -38,23 +39,29 @@ var _receiveLastMessage = function (conversationId,onData,onError){
                     headers,
                     '',
                     function (data){
-                        console.log('https.request()::response =' + data);
-                        //try{
+                        //console.log('https.request()::response =' + data);
+                        try{
                             var o = JSON.parse(data);
                             if(o.error != 'undefined' && o.error != null){
                                 return null;
                             }else{
                                 var last = o.activities[o.activities.length - 1];
                                 if(o.watermark != currentWatermark && o.watermark != ''){
+                                    console.log('========================');
+                                    console.log('o.watermark='+ o.watermark);
+                                    console.log('watermark='+currentWatermark);
+                                    console.log('========================');
                                     currentWatermark = o.watermark;
-                                    onData(last);
+                                    if(last.from != null && last.from.id != null && last.from.id != USERID){
+                                        onData(last);
+                                    }
                                 }else{
                                     onData(null);
                                 }
                             }
-                        //}catch(exp){
-                        //    return null;
-                        //}
+                        }catch(exp){
+                            return null;
+                        }
                         
                     },
                     function (err){
@@ -117,7 +124,7 @@ BotClient.prototype.startConversation = function(onMessageReceived){
                                                             function(err){
                                                                 
                                                             })
-                            },1000);
+                            },500);
     
     }
     else{
@@ -156,7 +163,7 @@ BotClient.prototype.startConversation = function(onMessageReceived){
 }
 BotClient.prototype.getDownloadStream = function (container, blob, onComplete){
     var pass = new stream.PassThrough();
-    blobSvc.getBlobToStream('upload', blob, pass, onComplete(error, result, response));
+    blobSvc.getBlobToStream(container, blob, pass, function (error, result, response){onComplete(error, result, response);});
     return pass;
 }
 BotClient.prototype.downloadFile = function(blob, localFn, func){
@@ -218,7 +225,7 @@ BotClient.prototype.sendMessage = function(text,attachments){
         'attachments':attachments
     };
     var activityString = JSON.stringify(activity);
-    console.log('>>> bot sending:' + activityString);
+    console.log(new Date() + '>>> bot sending:' + activityString);
     var headers = {
         'Authorization': 'Bearer ' + TOKEN,
         'Content-Type': 'application/json',

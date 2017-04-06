@@ -1,13 +1,6 @@
-const record = require('node-record-lpcm16'); 
-const Detector = require('snowboy').Detector; 
-const Models = require('snowboy').Models; 
-const uuid = require('node-uuid'); 
-const BOTCLIENT = require('./botclient.js'); 
-const HTTPSWAPPER = require('./https-helper.js'); 
-const URL = require('url'); 
-var header = require("waveheader"); 
-var fs = require('fs'); 
-const AUDIO_CONFIG = {
+const record = require('node-record-lpcm16'); const Detector = require('snowboy').Detector; const Models = require('snowboy').Models; const uuid = 
+require('node-uuid'); const BOTCLIENT = require('./botclient.js'); const HTTPSWAPPER = require('./https-helper.js'); const URL = require('url'); var header = 
+require("waveheader"); var fs = require('fs'); const AUDIO_CONFIG = {
                 sampleRate: 16000,
                 channels: 1,
                 bitDepth: 16
@@ -60,7 +53,7 @@ bot.setDirectlineSecret(CONFIGURATION.BotInfo.DirectLineSecret); bot.accquireTok
     console.log('>>>>>>>>>>>>>> ' + IS_TRIGGERED + ' <<<<<<<<<<<<<<<<<<<');
 }
 models.add({
-  file: 'resources/hello.pmdl',
+  file: 'resources/hello2.pmdl',
   sensitivity: '0.5',
   hotwords : 'hello'
 });
