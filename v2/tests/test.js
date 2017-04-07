@@ -4,8 +4,8 @@ const Models = require('snowboy').Models;
 const azure = require('azure-storage');
 const fs = require('fs');
 const uuid = require('node-uuid'); 
-const BOTCLIENT = require('./botclient.js'); 
-const HTTPSWAPPER = require('./https-helper.js'); 
+const BOTCLIENT = require('../botclient.js'); 
+const HTTPSWAPPER = require('../https-helper.js'); 
 const URL = require('url');
 const models = new Models(); 
 const AUDIO_CONFIG = 
@@ -108,8 +108,10 @@ function _startListeningAndUpload(onEnd){
     m.on('end',function(){
         console.log('...end...');
         _stopListening();
+
         onEnd(m);
     });
+
     m.pipe(ws);
 }
 
