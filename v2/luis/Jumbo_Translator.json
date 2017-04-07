@@ -1,0 +1,230 @@
+{
+  "luis_schema_version": "2.0.0",
+  "versionId": "0.1",
+  "name": "Jumbo_Translator",
+  "desc": "",
+  "culture": "zh-cn",
+  "intents": [
+    {
+      "name": "None"
+    },
+    {
+      "name": "Translation"
+    }
+  ],
+  "entities": [
+    {
+      "name": "Language"
+    },
+    {
+      "name": "Phrase"
+    }
+  ],
+  "composites": [],
+  "closedLists": [],
+  "bing_entities": [],
+  "actions": [],
+  "model_features": [
+    {
+      "name": "Language",
+      "mode": true,
+      "words": "英文,英語,中文,日文,日語,中國話,韓文,韓語,韓國話",
+      "activated": true
+    }
+  ],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "把這是一張桌子翻譯成中文",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 10,
+          "endPos": 11
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 1,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "我是天才的英文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "這是一張桌子的日文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 7,
+          "endPos": 8
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "我最帥的日文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 4,
+          "endPos": 5
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "我最帥的英文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 4,
+          "endPos": 5
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "要出門的日文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 4,
+          "endPos": 5
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "喇叭頭髮的英文",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "我愛你的日文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 4,
+          "endPos": 5
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "我真的很想給你一巴掌的中文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 11,
+          "endPos": 12
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "日文的早安怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 0,
+          "endPos": 1
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "這是一張桌子的英文怎麼說",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 7,
+          "endPos": 8
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 0,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "把我是天才翻譯成韓文",
+      "intent": "Translation",
+      "entities": [
+        {
+          "entity": "Language",
+          "startPos": 8,
+          "endPos": 9
+        },
+        {
+          "entity": "Phrase",
+          "startPos": 1,
+          "endPos": 4
+        }
+      ]
+    }
+  ]
+}
