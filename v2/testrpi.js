@@ -9,17 +9,17 @@ const AUDIO_CONFIG =
 const CONFIGURATION = 
 {
     StorageInfo:{
-                    account:'botstatusdb',
-                    key:'4ga82rAldePN4yaMKrUBOyjHPKie3pViVqzuNK2Lt1BGSniqmh1GfCfQ49q56Nh2cDhfz5Z0C/ELR+ymnjq5uw==',
-                    container:'upload'
+                    account:'<storage account>',
+                    key:'<storage key>',
+                    container:'<container>'
                 },
     BotInfo:{
         botId:'jumbo',
         userId:'michael',
-        DirectLineSecret:'X-O-skejDE0.cwA.n0k.PX7roOwYzPtkqr50ClLjRRBhz3v0e0rIYLgz7fXZjL4'
+        DirectLineSecret:'<direct line secret>'
     },
     CognitiveServiceInfo:{
-        BingSpeechApiSubscriptionKey:'84517151739b4a4f83ea1ce042cc348c'
+        BingSpeechApiSubscriptionKey:'<bing api key>'
     }
 };
 
