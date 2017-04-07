@@ -9,12 +9,14 @@ Requirements:
  * Microsoft Cognitive Service & Azure subscription
  	* BING Speech API
  	* Storage Account
+ 	* LUIS  
 
 
 
 To run this sample:
 
 ```javascript
-node combined.js
+cd v2
+node testrpi.js
 ```
 
