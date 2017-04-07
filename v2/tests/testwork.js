@@ -1,13 +1,11 @@
-//https://github.com/gillesdemey/node-record-lpcm16
-const record = require('node-record-lpcm16');
-const Detector = require('snowboy').Detector;
-const Models = require('snowboy').Models;
-const uuid = require('node-uuid');
-const BOTCLIENT = require('./botclient.js');
-const HTTPSWAPPER = require('./https-helper.js');
+const record = require('node-record-lpcm16'); 
+const Detector = require('snowboy').Detector; 
+const Models = require('snowboy').Models; 
+const uuid = require('node-uuid'); 
+const BOTCLIENT = require('./botclient.js'); 
+const HTTPSWAPPER = require('./https-helper.js'); 
 const URL = require('url'); 
 var header = require("waveheader"); 
-var stream = require('stream');
 var fs = require('fs'); 
 const AUDIO_CONFIG = {
                 sampleRate: 16000,
@@ -36,38 +34,16 @@ var BING_TOKEN = '';
 var buffer = null; 
 var index = 0; 
 var currentFileName = ''; //https://github.com/Kitt-AI/snowboy/issues/1 
-
-var Speaker = require('speaker');
-
-
 bot.setDirectlineSecret(CONFIGURATION.BotInfo.DirectLineSecret); 
 bot.accquireToken(function(data){
         var result = bot.startConversation(function(data){
             console.log('****** message recevied from bot = ' + JSON.stringify(data));
-            //var id = data.id.split("|")[0];
-            //var wavFN = id + '-sync.wav';
+            var id = data.id.split("|")[0];
+            var wavFN = id + '-sync.wav';
             console.log('==>>' + data.attachments != null && data.attachments != 'undefined');
             if(data.attachments != null && data.attachments != 'undefined'){
                 var url = data.attachments[0].contentUrl;
-                console.log('content container=' + CONFIGURATION.StorageInfo.container);
-                console.log('content name=' + data.attachments[0].name);
-                console.log('content url=' + url);
                 //Download file from contentUrl
-                var speaker = new Speaker({
-                    channels: 1,          // 2 channels
-                    bitDepth: 16,         // 16-bit samples
-                    sampleRate: 16000     // 44,100 Hz sample rate
-                    });
-                var passStream = bot.getDownloadStream(
-                            CONFIGURATION.StorageInfo.container, 
-                            data.attachments[0].name, 
-                            function(err,result,response){
-                                console.log('file downloaded');
-                                passStream.end();
-                            });
-
-                passStream.pipe(speaker);
-                /*
                 bot.downloadFile(data.attachments[0].name, data.attachments[0].name,
                     function (error, result, response){
                         if(!error){
@@ -77,7 +53,7 @@ bot.accquireToken(function(data){
                         
                 };
                 var u = URL.parse(url);
-                */
+                
             }
         });
         convId = result.conversationId;

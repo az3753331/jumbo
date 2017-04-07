@@ -1,6 +1,15 @@
-const record = require('node-record-lpcm16'); const Detector = require('snowboy').Detector; const Models = require('snowboy').Models; const uuid = 
-require('node-uuid'); const BOTCLIENT = require('./botclient.js'); const HTTPSWAPPER = require('./https-helper.js'); const URL = require('url'); var header = 
-require("waveheader"); var fs = require('fs'); const AUDIO_CONFIG = {
+//https://github.com/gillesdemey/node-record-lpcm16
+const record = require('node-record-lpcm16');
+const Detector = require('snowboy').Detector;
+const Models = require('snowboy').Models;
+const uuid = require('node-uuid');
+const BOTCLIENT = require('./botclient.js');
+const HTTPSWAPPER = require('./https-helper.js');
+const URL = require('url'); 
+var header = require("waveheader"); 
+var stream = require('stream');
+var fs = require('fs'); 
+const AUDIO_CONFIG = {
                 sampleRate: 16000,
                 channels: 1,
                 bitDepth: 16
@@ -18,17 +27,50 @@ const CONFIGURATION = {
         BingSpeechApiSubscriptionKey:'84517151739b4a4f83ea1ce042cc348c'
     }
 }
-const models = new Models(); var bot = new BOTCLIENT('jumbo','michael',CONFIGURATION.StorageInfo); var stream = null; var IS_TRIGGERED = false; var silenceCount 
-= 0; var BING_TOKEN = ''; var buffer = null; var index = 0; var currentFileName = ''; //https://github.com/Kitt-AI/snowboy/issues/1 
-bot.setDirectlineSecret(CONFIGURATION.BotInfo.DirectLineSecret); bot.accquireToken(function(data){
+const models = new Models(); 
+var bot = new BOTCLIENT('jumbo','michael',CONFIGURATION.StorageInfo); 
+var stream = null; 
+var IS_TRIGGERED = false; 
+var silenceCount = 0; 
+var BING_TOKEN = ''; 
+var buffer = null; 
+var index = 0; 
+var currentFileName = ''; //https://github.com/Kitt-AI/snowboy/issues/1 
+
+var Speaker = require('speaker');
+
+
+bot.setDirectlineSecret(CONFIGURATION.BotInfo.DirectLineSecret); 
+bot.accquireToken(function(data){
         var result = bot.startConversation(function(data){
-            console.log('****** message recevied from bot = ' + JSON.stringify(data));
-            var id = data.id.split("|")[0];
-            var wavFN = id + '-sync.wav';
+            console.log(new Date() + '****** message recevied from bot = ' + JSON.stringify(data));
+            //var id = data.id.split("|")[0];
+            //var wavFN = id + '-sync.wav';
             console.log('==>>' + data.attachments != null && data.attachments != 'undefined');
             if(data.attachments != null && data.attachments != 'undefined'){
                 var url = data.attachments[0].contentUrl;
+                console.log('content container=' + CONFIGURATION.StorageInfo.container);
+                console.log('content name=' + data.attachments[0].name);
+                console.log('content url=' + url);
                 //Download file from contentUrl
+                var speaker = new Speaker({
+                    channels: 1,          // 2 channels
+                    bitDepth: 16,         // 16-bit samples
+                    sampleRate: 16000     // 44,100 Hz sample rate
+                });
+                speaker.on('error',function(err){
+                    console.log('err=' + err);
+                });
+                var passStream = bot.getDownloadStream(
+                            CONFIGURATION.StorageInfo.container, 
+                            data.attachments[0].name, 
+                            function(err,result,response){
+                                console.log('file downloaded');
+                                passStream.end();
+                            });
+
+                passStream.pipe(speaker);
+                /*
                 bot.downloadFile(data.attachments[0].name, data.attachments[0].name,
                     function (error, result, response){
                         if(!error){
@@ -38,7 +80,7 @@ bot.setDirectlineSecret(CONFIGURATION.BotInfo.DirectLineSecret); bot.accquireTok
                         
                 };
                 var u = URL.parse(url);
-                
+                */
             }
         });
         convId = result.conversationId;
@@ -50,7 +92,7 @@ bot.setDirectlineSecret(CONFIGURATION.BotInfo.DirectLineSecret); bot.accquireTok
 ); function setTriggered (triggered){
     if(IS_TRIGGERED == triggered) return;
     IS_TRIGGERED = triggered;
-    console.log('>>>>>>>>>>>>>> ' + IS_TRIGGERED + ' <<<<<<<<<<<<<<<<<<<');
+    console.log(new Date() + '>>>>>>>>>>>>>> ' + IS_TRIGGERED + ' <<<<<<<<<<<<<<<<<<<');
 }
 models.add({
   file: 'resources/hello2.pmdl',
@@ -97,11 +139,11 @@ function onData_V2(data){
     }else{
         buffer = Buffer.concat([buffer, new Buffer(data)]);
     }
-    console.log('*** writting data to blob:' + data.byteLength);
+    console.log(new Date() + '*** writting data to blob:' + data.byteLength);
     
   }else{
     if(buffer != null){
-        console.log('*** end writting data to blob');
+        
         index++;
        
         var t = bot.getUploadStream(
@@ -118,8 +160,10 @@ function onData_V2(data){
             }));
         t.write(buffer);
         t.end();
+        console.log(new Date() + '*** end writting data to blob');
         buffer = null;
         //send message to bot
+        console.log(new Date() + '*** send message to bot');
         bot.sendMessage('',[{
                 contentType:'audio/wav',
                 contentUrl:'https://' + CONFIGURATION.StorageInfo.account + '.blob.core.windows.net/' +
