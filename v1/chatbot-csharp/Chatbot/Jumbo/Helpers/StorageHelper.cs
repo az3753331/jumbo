@@ -2,6 +2,7 @@
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -15,22 +16,27 @@ namespace Jumbo.Helpers
     {
         private string CONNECTION_STRING = null;
         private string SAS = null;
-        public StorageHelper(string connectionString)
+        public StorageHelper()
         {
-            CONNECTION_STRING = connectionString.Replace("[si]","&si").Replace("[sr]","&sr").Replace("[sig]","&sig").Replace("$$","&");
-            SAS = CONNECTION_STRING.Split('?')[1];
         }
 
-        public string UploadFile(String fileName, byte [] content)
+        public string UploadFile(String fileName, byte[] content)
         {
             try
             {
-                var container = new CloudBlobContainer(new Uri(CONNECTION_STRING));
-                var bbr = container.GetBlockBlobReference(fileName);
-                bbr.UploadFromByteArray(content, 0, content.Length);
+                //var container = new CloudBlobContainer(new Uri(CONNECTION_STRING));
+                var acct = new CloudStorageAccount(new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(
+                                                ConfigurationManager.AppSettings["StorageAccount"],
+                                                ConfigurationManager.AppSettings["StorageKey"]), true);
+                var bc = acct.CreateCloudBlobClient();
+                var cr = bc.GetContainerReference(ConfigurationManager.AppSettings["StorageContainer"]);
+                var blob = cr.GetBlockBlobReference(fileName);
+                //var bbr = container.GetBlockBlobReference(fileName);
+                blob.UploadFromByteArray(content, 0, content.Length);
 
-                return bbr.Uri.ToString() + "?" + SAS;
-            }catch(Exception exp)
+                return blob.Uri.ToString();
+            }
+            catch (Exception exp)
             {
                 throw exp;
             }
@@ -41,17 +47,14 @@ namespace Jumbo.Helpers
         {
             try
             {
-                var container = new CloudBlobContainer(new Uri(CONNECTION_STRING));
-                var bbr = container.GetBlockBlobReference(fileName);
-
-                content.Seek(0, SeekOrigin.Begin);
-
-                bbr.UploadFromStream(content);
-
-                return bbr.Uri.ToString() + "?" + SAS;
+                using (var sr = new BinaryReader(content))
+                {
+                    var bytes = sr.ReadBytes((int)content.Length);
+                    return UploadFile(fileName, bytes);
+                }
 
             }
-            catch(Exception exp)
+            catch (Exception exp)
             {
                 throw exp;
             }
@@ -61,16 +64,16 @@ namespace Jumbo.Helpers
         {
 
         }
-        public byte [] DownloadFile(string fineName)
-        {
-            var container = new CloudBlobContainer(new Uri(CONNECTION_STRING));
-            var blobRef = container.GetBlobReference(fineName) as CloudBlockBlob;
-            using (var ms = new MemoryStream())
-            {
-                blobRef.DownloadToStream(ms);
-                return ms.ToArray();
-            }
+        //public byte[] DownloadFile(string fineName)
+        //{
+        //    var container = new CloudBlobContainer(new Uri(CONNECTION_STRING));
+        //    var blobRef = container.GetBlobReference(fineName) as CloudBlockBlob;
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        blobRef.DownloadToStream(ms);
+        //        return ms.ToArray();
+        //    }
 
-        }
+        //}
     }
 }

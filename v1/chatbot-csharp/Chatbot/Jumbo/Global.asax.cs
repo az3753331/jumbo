@@ -12,6 +12,7 @@ namespace Jumbo
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            AutofacConfig.Register();
         }
     }
 }

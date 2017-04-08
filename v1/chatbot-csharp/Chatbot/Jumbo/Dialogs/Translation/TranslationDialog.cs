@@ -17,15 +17,17 @@ using Jumbo.Helpers;
 namespace Jumbo.Dialogs
 {
     [Serializable]
+    [LuisModel("cad19466-81e6-4d84-a521-815495915e3d", "6d35713e91ae40859618c38a6ceb95c5")]
     [LuisModel("5ff5bdf9-e01e-445e-b6c1-ea5d3ec4917f", "6d35713e91ae40859618c38a6ceb95c5", LuisApiVersion.V2)]
-    public partial class TranslationDialog:LuisDialog<object>
+    public partial class JumboDialog:LuisDialog<object>
     {
         const string TOKEN_CACHE_KEY = "_SPEECH_TOKEN_";
         protected override async Task MessageReceived(IDialogContext context, IAwaitable<IMessageActivity> item)
         {
+            var activity = await item;
+
             try
             {
-                var activity = await item;
                 Logger.Info($"message received:{JsonConvert.SerializeObject(activity)}");
 
                 if (activity.Attachments != null && activity.Attachments.Count > 0)
@@ -35,8 +37,10 @@ namespace Jumbo.Dialogs
 
                     if (string.IsNullOrEmpty(token))
                     {
+                        Logger.Info($"token cache not exists!");
                         token = await stt.AcquireTokenAsync();
-                        CacheHelper.Add<string>(DateTime.UtcNow.AddMinutes(50), TOKEN_CACHE_KEY, token);
+                        Logger.Info($"new token acquired:{token}");
+                        CacheHelper.Add<string>(DateTime.UtcNow.AddMinutes(5), TOKEN_CACHE_KEY, token);
                     }
                     string text = "";
                     Stream result = null;
@@ -44,6 +48,10 @@ namespace Jumbo.Dialogs
                     {
                         Logger.Info($"recognizing via url:{activity.Attachments[0].ContentUrl}");
                         var req = await StreamHelper.LoadFrom(activity.Attachments[0].ContentUrl);
+                        if (req.CanSeek)
+                        {
+                            Logger.Info($"length={req.Length}");
+                        }
                         result = await stt.Recognize(req, token);
                         Logger.Info($"recognized");
                     }
@@ -59,6 +67,7 @@ namespace Jumbo.Dialogs
                     activity.Attachments = null;
                     activity.Text = j.results[0].lexical;
                 }
+                await base.MessageReceived(context, item);
             }
             catch (Exception exp)
             {
@@ -67,9 +76,9 @@ namespace Jumbo.Dialogs
                 {
                     Logger.Info($"Exception:{exp.InnerException.Message} - {exp.InnerException.StackTrace}");
                 }
+                await ReplyAsync(context, (Activity)activity, $"錯誤:{exp.Message}");
                 throw exp;
             }
-            await base.MessageReceived(context, item);
         }
         private string GetLanguageCode(string language)
         {
@@ -112,10 +121,10 @@ namespace Jumbo.Dialogs
             CognitiveService.BingTTS tts = new CognitiveService.BingTTS(ConfigurationManager.AppSettings["BingSpeechAPI_Key"]);
             var token = await tts.AcquireTokenAsync();
             Stream stream = await tts.Synthesize(reply.Text, languageCode);
-            var sh = new StorageHelper(ConfigurationManager.AppSettings["StorageSASUri"].Replace("$$", "&"));
+            var sh = new StorageHelper();
             var guid = Guid.NewGuid().ToString();
             var fn = sh.UploadFile(guid + ".wav", stream);
-
+            Logger.Info($"result uploaded to {fn}");
             if (reply.Attachments == null)
             {
                 reply.Attachments = new List<Attachment>();
@@ -149,9 +158,11 @@ namespace Jumbo.Dialogs
             var languageCode = GetLanguageCode(language.Entity);
             if (language == null || phrase == null)
             {
-                
-                await ReplyAsync(context, context.Activity.AsMessageActivity() as Activity, App_GlobalResources.TextMessages.BotTranslationMissingParameter);
-
+                Logger.Info($"return missing parameters...");
+                await ReplyAsync(context, context.Activity.AsMessageActivity() as Activity, 
+                        App_GlobalResources.TextMessages.BotTranslationMissingParameter,
+                        ConfigurationManager.AppSettings["Speech_Language"]);
+                Logger.Info($"return missing parameters...done");
                 context.Done(App_GlobalResources.TextMessages.BotTranslationMissingParameter);
             }
             else
@@ -164,7 +175,6 @@ namespace Jumbo.Dialogs
                 await ReplyAsync(context, context.Activity.AsMessageActivity() as Activity, resultText, languageCode);
 
                 context.Done(resultText);
-
             }
             //await ReplyAsync(context, context.Activity.AsMessageActivity() as Activity, App_GlobalResources.TextMessages.BotDontUnderstand);
         }

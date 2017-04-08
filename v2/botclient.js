@@ -52,6 +52,10 @@ var _receiveLastMessage = function (conversationId,onData,onError){
                                     console.log('watermark='+currentWatermark);
                                     console.log('========================');
                                     currentWatermark = o.watermark;
+                                    if(last.error != null){
+                                        //error
+                                        onError(last);
+                                    }
                                     if(last.from != null && last.from.id != null && last.from.id != USERID){
                                         onData(last);
                                     }
@@ -89,7 +93,7 @@ BotClient.prototype.receiveLastMessage = function(conversationId, onData, onErro
     return _receiveLastMessage(conversationId, onData, onError);
 }
 
-BotClient.prototype.startConversation = function(onMessageReceived){
+BotClient.prototype.startConversation = function(onMessageReceived, onError){
     var headers = {
         'Authorization': 'Bearer ' + TOKEN
     };
@@ -122,7 +126,7 @@ BotClient.prototype.startConversation = function(onMessageReceived){
                                                                 }
                                                             },
                                                             function(err){
-                                                                
+                                                                onError(err);
                                                             })
                             },500);
     

@@ -123,6 +123,9 @@
   <data name="BotGreetings" xml:space="preserve">
     <value>Hello</value>
   </data>
+  <data name="BotNoAnswer" xml:space="preserve">
+    <value>Sorry, I can't find the answer to your question</value>
+  </data>
   <data name="BotReplyHow" xml:space="preserve">
     <value />
   </data>

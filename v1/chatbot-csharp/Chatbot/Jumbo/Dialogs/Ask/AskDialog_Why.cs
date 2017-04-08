@@ -1,4 +1,6 @@
-﻿using Jumbo.CognitiveService;
+﻿using Autofac.Integration.Mvc;
+using Jumbo.CognitiveService;
+using Jumbo.Dialogs.Ask;
 using Jumbo.Helpers;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis;
@@ -11,17 +13,22 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
+using Autofac;
 
 namespace Jumbo.Dialogs
 {
   
-    public partial class AskDialog:LuisDialog<string>
+    public partial class JumboDialog
     {
         [LuisIntent("AskWhy")]
         public async Task AskWhy(IDialogContext context, LuisResult result)
         {
+            Logger.Info($"Intent::AskWhy - {result.Query}");
             var bing = await DoSearchAsync(result);
-            await ReplyAsync(context, context.Activity.AsMessageActivity() as Activity, "");
+
+            Logger.Info($"Intent::AskWhy result - {bing}");
+            await ReplyAsync(context, context.Activity.AsMessageActivity() as Activity, bing);
         }
     }
 }

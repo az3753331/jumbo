@@ -15,11 +15,11 @@ using System.Web;
 namespace Jumbo.Dialogs
 {
 
-    public partial class AskDialog:LuisDialog<string>
+    public partial class JumboDialog
     {
        
-        [LuisIntent("AskWhat")]
-        public async Task AskWhat(IDialogContext context, LuisResult result)
+        [LuisIntent("builtin.intent.weather.check_weather")]
+        public async Task AskWeather(IDialogContext context, LuisResult result)
         {
             var bing = await DoSearchAsync(result);
             await ReplyAsync(context, context.Activity.AsMessageActivity() as Activity, "");

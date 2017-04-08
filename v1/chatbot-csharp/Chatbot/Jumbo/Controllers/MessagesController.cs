@@ -59,7 +59,9 @@ namespace Jumbo
                 
                 await connector.Conversations.ReplyToActivityAsync(voiceReply);
 #else
-                    await Conversation.SendAsync(activity, () => new Dialogs.TranslationDialog());
+                    //await Conversation.SendAsync(activity, () => new Dialogs.TranslationDialog());
+                    //await Conversation.SendAsync(activity, () => new Dialogs.AskDialog());
+                    await Conversation.SendAsync(activity, () => new Dialogs.JumboDialog());
 #endif
                 }
                 else

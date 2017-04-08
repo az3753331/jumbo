@@ -15,7 +15,7 @@ using System.Web;
 namespace Jumbo.Dialogs
 {
 
-    public partial class AskDialog:LuisDialog<string>
+    public partial class JumboDialog
     {
         [LuisIntent("AskWho")]
         public async Task AskWho(IDialogContext context, LuisResult result)

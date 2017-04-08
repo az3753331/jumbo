@@ -164,7 +164,7 @@ RPiVoiceAgent.prototype.start = function(onVoiceUploaded,onHotwordDetected,onBot
                     var url = data.attachments[0].contentUrl;
                     console.log('has attachments:' + url);
                     //Streaming
-                    if(true){
+                    
                         var speaker = new Speaker({
                             channels: 1,          // 2 channels
                             bitDepth: 16,         // 16-bit samples
@@ -179,6 +179,7 @@ RPiVoiceAgent.prototype.start = function(onVoiceUploaded,onHotwordDetected,onBot
                             console.log('speaker closed');
                             _start();
                         });
+                    if(false){
                         console.log('has attachments, playing audio...' + STORAGE_INFO.container + '/' + data.attachments[0].name);
                         var passStream = bot.getDownloadStream(
                                                 STORAGE_INFO.container, 
@@ -194,11 +195,18 @@ RPiVoiceAgent.prototype.start = function(onVoiceUploaded,onHotwordDetected,onBot
                         bot.downloadFile(data.attachments[0].name, data.attachments[0].name,
                             function (error, result, response){
                                 if(!error){
-                                    
+                                    var f = fs.createReadStream(data.attachments[0].name);
+                                    f.pipe(speaker);
                                 }
                         });                        
                     }
                 }
+            },
+            /*onError*/
+            function(err){
+                console.log('error occurred while receiving bot reply');
+                //error occured, resume listening
+                _start();
             });
             convId = result.conversationId;
         },

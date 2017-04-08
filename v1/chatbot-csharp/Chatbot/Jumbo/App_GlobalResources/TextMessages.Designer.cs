@@ -79,6 +79,15 @@ namespace Jumbo.App_GlobalResources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 抱歉，我找不到答案.
+        /// </summary>
+        internal static string BotNoAnswer {
+            get {
+                return ResourceManager.GetString("BotNoAnswer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         internal static string BotReplyHow {
